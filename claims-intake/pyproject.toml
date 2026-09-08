@@ -5,7 +5,14 @@ requires-python = ">=3.12"
 dependencies = ["fastapi", "pydantic", "uvicorn"]
 
 [dependency-groups]
-dev = ["pytest", "httpx", "mypy", "ruff"]
+dev = [
+    "pytest",
+    "httpx",
+    "mypy",
+    "ruff",
+    "pytest-cov>=7.1.0",
+    "flake8>=7.3.0",
+]
 
 [build-system]
 requires = ["hatchling"]

@@ -37,9 +37,26 @@ in the image specification and should be reported rather than worked around.
 uv run pytest
 uv run ruff check .
 uv run mypy
+uv run pytest tests/unit/test_models.py -q
+uv run pytest tests/unit/test_models.py --cov=claims.models --cov-report=term-missing
 ```
 
 ## Data
 
 Everything in `data/` is synthetic and was authored for this program. It contains
 no real client data and no named clients.
+
+## Run locally
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+Swagger UI:
+
+```text
+http://127.0.0.1:8000/docs
+```

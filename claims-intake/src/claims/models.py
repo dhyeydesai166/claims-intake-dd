@@ -10,7 +10,17 @@ Day 2 assignment. Implement these against `docs/api-contract.md` sections 2 and 
 
 from __future__ import annotations
 
-from pydantic import BaseModel
+from dataclasses import dataclass
+from datetime import date
+from decimal import Decimal
+from typing import Literal, NewType
+
+from pydantic import BaseModel, ConfigDict, Field
+
+ClaimType = Literal["collision", "theft", "glass", "liability", "weather"]
+RuleId = NewType("RuleId", str)
+ErrorCode = NewType("ErrorCode", str)
+CLAIM_REF_PATTERN = r"^CLM-\d{4}-\d{6}$"
 
 
 class NotificationRequest(BaseModel):
@@ -26,7 +36,17 @@ class NotificationRequest(BaseModel):
     one, is Day 2's work.
     """
 
-    policy_number: str
+    model_config = ConfigDict(extra="forbid")
+
+    policy_number: str = Field(min_length=1, strict=True)
+    loss_date: date
+    claim_type: ClaimType
+    estimated_amount: Decimal = Field(gt=0, decimal_places=2)
+    description: str | None = None
+
+
+class AcceptedNotification(NotificationRequest):
+    """A request that passed every rule. The only type record() will store."""
 
 
 class Policy(BaseModel):
@@ -38,12 +58,39 @@ class Policy(BaseModel):
     Day 2 assignment: declare the fields.
     """
 
+    model_config = ConfigDict(extra="forbid")
 
-class RecordedNotification(BaseModel):
+    policy_number: str = Field(min_length=1, strict=True)
+    product: str = Field(min_length=1)
+    effective_date: date
+    expiry_date: date
+    cancellation_date: date | None
+    limit: Decimal = Field(gt=0, decimal_places=2)
+    permitted_claim_types: tuple[ClaimType, ...] = Field(min_length=1)
+
+
+@dataclass(frozen=True)
+class RuleFailure:
+    rule: RuleId
+    code: ErrorCode
+
+
+class ClaimRecord(BaseModel):
     """A notification that passed every rule and was written.
 
     Carries the claim reference issued at the time it was recorded. Contract
     section 3 fixes the reference format.
-
-    Day 2 assignment: declare the fields.
     """
+
+    model_config = ConfigDict(extra="forbid")
+
+    claim_reference: str = Field(pattern=CLAIM_REF_PATTERN)
+    policy_number: str = Field(min_length=1, strict=True)
+    loss_date: date
+    claim_type: ClaimType
+    estimated_amount: Decimal = Field(gt=0, decimal_places=2)
+    description: str | None = None
+
+
+class RecordedNotification(ClaimRecord):
+    """Stored claim. Same constraints as ClaimRecord."""
