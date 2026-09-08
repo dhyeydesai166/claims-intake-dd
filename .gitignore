@@ -7,3 +7,6 @@ __pycache__/
 .ruff_cache/
 .coverage
 .worktrees/
+explanation.md
+usage.md
+docs/Master.md
