@@ -177,6 +177,7 @@ def submit_notification(
     recorded with a claim reference or it does not exist, and there is no state in
     between for a later reader to interpret.
     """
+    raise RuntimeError("deliberate gate failure")
     try:
         record = policy_client.get_policy(notification.policy_number)
     except PolicyNotFound:
