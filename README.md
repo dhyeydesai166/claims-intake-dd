@@ -45,6 +45,7 @@ From the repository root:
 
 ```
 docker buildx build --platform linux/amd64 -t claims-intake:day4 .
+docker run --rm -p 8000:8000 claims-intake:day4
 ```
 
 The image listens on port 8000. `StubPolicyClient` reads `data/policies.json`, so `data/` is in the image.
