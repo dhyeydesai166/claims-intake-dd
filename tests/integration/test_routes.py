@@ -14,7 +14,7 @@ import json
 import re
 from collections.abc import Iterator
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 
 import pytest
 from fastapi.testclient import TestClient
@@ -90,7 +90,7 @@ def client(
 
 
 def post_notification(client: TestClient, payload: dict[str, Any]) -> Response:
-    return client.post(ENDPOINT, json=payload)
+    return cast(Response, client.post(ENDPOINT, json=payload))
 
 
 def assert_error_envelope(response: Response, *, status: int, code: str) -> dict[str, Any]:
@@ -99,6 +99,7 @@ def assert_error_envelope(response: Response, *, status: int, code: str) -> dict
     body = response.json()
     assert "error" in body
     error = body["error"]
+    assert isinstance(error, dict)
     assert error["code"] == code
     assert isinstance(error.get("message"), str) and error["message"]
     detail = error.get("detail")
