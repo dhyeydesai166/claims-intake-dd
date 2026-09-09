@@ -215,7 +215,7 @@ async def policy_lookup_failed_handler(
     return _lookup_failed_response(exc)
 
 
-@app.post("/notifications")
+@app.post("/notifications", status_code=201)
 def post_notification(
     notification: NotificationRequest,
     policy_client: Annotated[PolicyClient, Depends(get_policy_client)],
